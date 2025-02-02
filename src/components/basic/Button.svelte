@@ -1,25 +1,31 @@
 <script lang="ts">
 	import type { Snippet } from "svelte";
 
-	// TODO : Enlever style
+	interface Props {
+		children: Snippet;
+		onClick?: () => void;
+		variant?: "primary" | "secondary" | "span";
+		disabled?: boolean;
+	}
+
 	let {
 		children,
 		onClick,
 		variant = "primary",
 		disabled = false,
-	}: {
-		children: Snippet;
-		onClick?: () => void;
-		variant?: "primary" | "secondary" | "span";
-		disabled?: boolean;
-	} = $props();
+	}: Props = $props();
 
 	let doIt = $state(disabled ? () => {} : onClick);
 </script>
 
 {#if variant === "span"}
-	<span role="button" tabindex="0" onkeydown={() => {}} onclick={doIt}
-		>{@render children?.()}</span
+	<span
+		role="button"
+		tabindex="0"
+		onkeydown={(e) => {
+			if (e.key === "Enter") doIt?.();
+		}}
+		onclick={doIt}>{@render children?.()}</span
 	>
 {:else}
 	<button {disabled} class={variant} onclick={doIt}
@@ -30,8 +36,5 @@
 <style>
 	* {
 		cursor: pointer;
-	}
-	[disabled] {
-		cursor: not-allowed;
 	}
 </style>

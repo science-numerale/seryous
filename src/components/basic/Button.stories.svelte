@@ -1,12 +1,11 @@
 <script lang="ts" module>
 	import { defineMeta } from "@storybook/addon-svelte-csf";
 	import Button from "./Button.svelte";
-    import { defaultStoryParams } from "../storiesUtils";
 
 	const { Story } = defineMeta({
-		...defaultStoryParams,
 		title: "Basic/Button",
 		component: Button,
+		tags: ["autodocs"],
 	});
 </script>
 

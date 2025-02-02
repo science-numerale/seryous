@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { base } from "$app/paths";
+	import "../black-white.css";
 	import "../app.css";
-    import { toolsLinks } from "./tools/tools";
+	import { toolsLinks } from "./tools/tools";
 
 	let { children } = $props();
 </script>
@@ -11,7 +12,7 @@
 		<nav>
 			<ul>
 				<li>
-					<a href="{base}/">Acceuil</a>
+					<a href="{base}/">Accueil</a>
 				</li>
 				{#each Object.entries(toolsLinks) as [name, url]}
 					<li>

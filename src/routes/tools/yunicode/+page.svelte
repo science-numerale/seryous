@@ -1,7 +1,12 @@
 <script lang="ts">
-	import Button from "../../../stories/basic/Button.svelte";
-import getVariant, { fonts, type Font, type Variant } from "../../../stories/tools/unicodeVariants";
-	import Yunicode from "../../../stories/tools/Yunicode.svelte";
+	import Button from "../../../components/basic/Button.svelte";
+	import Tool from "../Tool.svelte";
+	import getVariant, {
+		fonts,
+		type Font,
+		type Variant,
+	} from "./unicodeVariants";
+	import Yunicode from "./Yunicode.svelte";
 
 	function keys<T extends Record<string, any>>(
 		obj: T,
@@ -13,13 +18,27 @@ import getVariant, { fonts, type Font, type Variant } from "../../../stories/too
 	let cVariant: Variant<Font> = $state("normal");
 </script>
 
-<Yunicode bind:font={cFont} bind:variant={cVariant} />
+<Tool name="Yunicode">
+	<Yunicode bind:font={cFont} bind:variant={cVariant} />
 
-{#each keys(fonts) as font}
-	<ul>
-		{#each keys(fonts[font]) as variant}
-			<li><Button variant="span" onClick={()=>{cFont = font; cVariant = variant}}>{getVariant(`${font} (${variant})`, font, variant as "normal")}</Button></li>
-		{/each}
-	</ul>
-{/each}
-
+	{#each keys(fonts) as font}
+		<ul>
+			{#each keys(fonts[font]) as variant}
+				<li>
+					<Button
+						variant="span"
+						onClick={() => {
+							cFont = font;
+							cVariant = variant;
+						}}
+						>{getVariant(
+							`${font} (${variant})`,
+							font,
+							variant as "normal",
+						)}</Button
+					>
+				</li>
+			{/each}
+		</ul>
+	{/each}
+</Tool>

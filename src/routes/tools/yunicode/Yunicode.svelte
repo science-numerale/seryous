@@ -5,8 +5,8 @@
 		type Font,
 		type Variant,
 	} from "./unicodeVariants";
-	import Button from "../basic/Button.svelte";
-    import CopyButton from "../CopyButton.svelte";
+	import CopyButton from "../../../components/CopyButton.svelte";
+	import Button from "../../../components/basic/Button.svelte";
 
 	let {
 		text = $bindable(""),
@@ -42,9 +42,17 @@
 		}
 	}
 
-	let rnd = Math.random().toString();
+	let oldVariant: typeof variant;
+	$effect(() => {
+		if (variant === "srevnela" && oldVariant !== "srevnela") {
+			verlan = true;
+		} else if (variant !== "srevnela" && oldVariant === "srevnela") {
+			verlan = false
+		}
+		oldVariant = variant
+	});
 
-	let copied = $state(false);
+	let rnd = Math.random().toString();
 </script>
 
 <div>
@@ -65,9 +73,11 @@
 			<option value={key}>{getVariant(key, font, key)}</option>
 		{/each}
 	</select>
-	<input type="checkbox" bind:checked={verlan} id={rnd + "verlan"} /><label
-		for={rnd + "verlan"}>Verlan</label
-	>
+	<span style="white-space: nowrap;">
+		<input type="checkbox" bind:checked={verlan} id={rnd + "verlan"} /><label
+			for={rnd + "verlan"}>Verlan</label
+		>
+	</span>
 
 	<br />
 
@@ -75,10 +85,17 @@
 		bind:value={text}
 		bind:this={area}
 		onbeforeinputcapture={pressed}
-		placeholder="Choisissez votre police, puis écrivez"
+		placeholder={make("Choisissez votre police, puis écrivez")}
 	></textarea>
 
 	<br />
 
 	<CopyButton {text} />
+	{#if navigator.share}
+		<Button
+			onClick={() => {
+				navigator.share?.({ text });
+			}}>Partager</Button
+		>
+	{/if}
 </div>

@@ -6,22 +6,25 @@
 
 body {
 	margin: 0;
-	background: black;
-
-	&, * {
-		color: white;
-	}
-}
-
-main {
-	background: white;
-
-	&, * {
-		color: black;
-	}
 }
 
 q {
 	quotes: "« " " »";
 	/* Example for French-style quotes */
+}
+
+textarea, input {
+	border: solid 2px black;
+}
+
+input, textarea, button, select {
+	background: black;
+	&, * {
+		color: white;
+	}
+}
+
+[disabled] {
+	opacity: 50%;
+	cursor: not-allowed;
 }

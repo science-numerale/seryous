@@ -4,11 +4,11 @@
 
 <svelte:head>
 	<title>Seryous</title>
-	<meta name="description" content="Acceuil de Seryous" />
+	<meta name="description" content="Accueil de Seryous" />
 </svelte:head>
 
 <h1>
-	Ceci est la page d'acceuil de Seryous, et elle n'est pas très interessante pour l'instant
+	Ceci est la page d'accueil de Seryous, et elle n'est pas très interessante pour l'instant
 </h1>
 <p>
 	Le mieux serait d'aller voir l'avancement des différents outils que propose le

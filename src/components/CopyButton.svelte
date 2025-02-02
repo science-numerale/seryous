@@ -1,11 +1,13 @@
 <script lang="ts">
+    import type { ComponentProps } from "svelte";
 	import Button from "./basic/Button.svelte";
 
 	let {
-		text
+		text,
+		...props
 	}: {
-		text: string
-	} = $props()
+		text: string;
+	} & Omit<ComponentProps<typeof Button>, "onClick" | "children"> = $props()
 
 	let copied = $state(0);
 </script>
@@ -18,6 +20,9 @@
 			copied -= 1;
 		}, 3000);
 	}}
+
+	{...props}
+	
 	>{#if copied > 0}
 		Copié !
 	{:else}
