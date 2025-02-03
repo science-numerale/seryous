@@ -17,11 +17,16 @@ textarea, input {
 	border: solid 2px black;
 }
 
-input, textarea, button, select {
+button, select {
 	background: black;
 	&, * {
 		color: white;
 	}
+
+	border: none;
+}
+input, textarea {
+	border: 2px black solid;
 }
 
 [disabled] {

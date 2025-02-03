@@ -2,7 +2,8 @@
 	import Button from "../../../components/basic/Button.svelte";
 	import Tool from "../Tool.svelte";
 	import getVariant, {
-		fonts,
+		alphabetsDB,
+		modifiersDB,
 		type Font,
 		type Variant,
 	} from "./unicodeVariants";
@@ -14,28 +15,54 @@
 		return Object.keys(obj) as (T extends T ? keyof T : never)[];
 	}
 
-	let cFont: Font = $state("normal");
-	let cVariant: Variant<Font> = $state("normal");
+	let cAlphabet: {
+		font: Font;
+		variant: Variant<Font>;
+	} = $state({
+		font: "normal",
+		variant: "normal",
+	});
+	let cModifiers: string[] = $state([]);
 </script>
 
 <Tool name="Yunicode">
-	<Yunicode bind:font={cFont} bind:variant={cVariant} />
+	<Yunicode bind:font={cAlphabet.font} bind:variant={cAlphabet.variant} bind:modifiers={cModifiers} />
 
-	{#each keys(fonts) as font}
+	<h2>Alphabets</h2>
+	{#each keys(alphabetsDB) as font}
 		<ul>
-			{#each keys(fonts[font]) as variant}
+			{#each keys(alphabetsDB[font]) as variant}
 				<li>
 					<Button
 						variant="span"
 						onClick={() => {
-							cFont = font;
-							cVariant = variant;
+							cAlphabet.font = font;
+							cAlphabet.variant = variant;
 						}}
 						>{getVariant(
 							`${font} (${variant})`,
 							font,
 							variant as "normal",
 						)}</Button
+					>
+				</li>
+			{/each}
+		</ul>
+	{/each}
+
+	<h2>Modificateurs</h2>
+	{#each keys(modifiersDB) as modifier}
+		<ul>
+			{#each keys(modifiersDB[modifier]) as variant}
+				<li>
+					<Button
+						variant="span"
+						onClick={() => {
+							cModifiers.push(modifiersDB[modifier][variant]);
+						}}
+						>{getVariant(`${modifier} (${variant})`, "normal", "normal", [
+							modifiersDB[modifier][variant],
+						])}</Button
 					>
 				</li>
 			{/each}
