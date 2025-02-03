@@ -25,7 +25,7 @@ button, select {
 
 	border: none;
 }
-input, textarea {
+input, textarea, hr {
 	border: 2px black solid;
 }
 

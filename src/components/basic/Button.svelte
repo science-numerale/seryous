@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Snippet } from "svelte";
+	//import type { SvelteHTMLElements } from "svelte/elements";
 
 	interface Props {
 		children: Snippet;
@@ -13,7 +14,8 @@
 		onClick,
 		variant = "primary",
 		disabled = false,
-	}: Props = $props();
+		...props
+	}: Props & { style?: string } = $props();
 
 	let doIt = $state(disabled ? () => {} : onClick);
 </script>
@@ -25,10 +27,11 @@
 		onkeydown={(e) => {
 			if (e.key === "Enter") doIt?.();
 		}}
-		onclick={doIt}>{@render children?.()}</span
+		onclick={doIt}
+		{...props}>{@render children?.()}</span
 	>
 {:else}
-	<button {disabled} class={variant} onclick={doIt}
+	<button {disabled} class={variant} onclick={doIt} {...props}
 		>{@render children?.()}</button
 	>
 {/if}

@@ -2,7 +2,6 @@
 	import { onMount } from "svelte";
 	import getVariant, {
 		alphabetsDB,
-		modifiersDB,
 		type Font,
 		type Variant,
 	} from "./unicodeVariants";
@@ -20,18 +19,11 @@
 		text?: string;
 		font?: Font;
 		variant?: Variant<Font>;
-		modifiers?: string[]
+		modifiers?: string[];
 		verlan?: boolean;
 	} = $props();
 
-	let make = (s: string) =>
-		getVariant(
-			s,
-			font,
-			variant,
-			modifiers,
-			verlan,
-		);
+	let make = (s: string) => getVariant(s, font, variant, modifiers, verlan);
 
 	onMount(() => {
 		if (text) text = make(text);
@@ -65,8 +57,8 @@
 	let rnd = Math.random().toString();
 </script>
 
-<div style="display: flex; flex-wrap: wrap; gap: 1rem;">
-	<div style="display: flex; flex-direction: column; gap: 0.5rem;">
+<div style="display: inline-flex; flex-wrap: wrap; gap: 1rem; padding: 0.25rem; border: 2px solid black; width: 40rem; max-width: 100%; box-sizing: border-box;">
+	<div style="display: flex; flex-direction: column; gap: 0.5rem; flex-shrink: 3;">
 		<div>
 			<select
 				bind:value={font}
@@ -90,13 +82,14 @@
 		<ModifiersEditor bind:modifiers />
 	</div>
 
-	<div>
+	<div style="flex-grow: 1; flex-shrink: 1;">
 		<div style="white-space: nowrap;">
 			<input type="checkbox" bind:checked={verlan} id={rnd + "verlan"} /><label
 				for={rnd + "verlan"}>Verlan</label
 			>
 		</div>
 		<textarea
+			style="resize: vertical; width: 100%; box-sizing: border-box; min-width: 5rem;"
 			bind:value={text}
 			bind:this={area}
 			onbeforeinputcapture={pressed}
@@ -105,7 +98,7 @@
 
 		<br />
 
-		<CopyButton {text} />
+		<CopyButton {text} style="width: 100%; box-sizing: border-box;" />
 		{#if navigator.share}
 			<Button
 				onClick={() => {

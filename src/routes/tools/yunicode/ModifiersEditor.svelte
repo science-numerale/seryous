@@ -9,6 +9,11 @@
 </script>
 
 <div>
+	<strong>Modificateurs :</strong>
+	{#if modifiers.length === 0}
+		<br />
+		<small>(Essayez de regarder dans la bibliothèque)</small>
+	{/if}
 	<ul>
 		{#each modifiers as _, i}
 			<li>
@@ -21,6 +26,7 @@
 			</li>
 		{/each}
 	</ul>
+
 	<Button
 		onClick={() => {
 			modifiers.push("");

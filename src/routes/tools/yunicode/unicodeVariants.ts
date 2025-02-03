@@ -48,13 +48,17 @@ export const alphabetsDB = {
 
 export let modifiersDB = {
 	"barré": {
+		"court": "b̵a̵r̵r̵é̵ ̵c̵o̵u̵r̵t̵",
 		"long": "b̶a̶r̶r̶é̶ ̶l̶o̶n̶g̶",
+		"tilde": "b̴a̴r̴r̴é̴ ̴t̴i̴l̴d̴e̴",
 		"oblique-court": "d̷o̷u̷b̷l̷e̷ ̷m̷a̷c̷r̷o̷n̷",
-		"oblique-long": "d̸o̸u̸b̸l̸e̸ ̸m̸a̸c̸r̸o̸n̸"
+		"oblique-long": "d̸o̸u̸b̸l̸e̸ ̸m̸a̸c̸r̸o̸n̸",
+		"interdit": "i⃠n⃠t⃠e⃠r⃠d⃠i⃠t⃠",
 	},
 	"souligné": {
 		"ligne-basse": "l̲i̲g̲n̲e̲ ̲b̲a̲s̲s̲e̲",
 		"double-macron": "d͟o͟u͟b͟l͟e͟ ͟m͟a͟c͟r͟o͟n͟",
+		"double": "s̳o̳u̳l̳i̳g̳n̳é̳ ̳d̳o̳u̳b̳l̳e̳"
 	}
 }
 
