@@ -10,7 +10,7 @@
 <h1>
 	Ceci est la page d'accueil de Seryous <small>(≠ <a
 		href="https://science-numerale.github.io/yuser/">Yuser</a
-	>)</small>, et elle n'est pas très interessante pour l'instant
+	>)</small>, et elle n'est pas très intéressante pour l'instant
 </h1>
 <p>
 	Le mieux serait d'aller voir l'avancement des différents outils que propose le

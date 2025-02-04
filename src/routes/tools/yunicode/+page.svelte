@@ -28,7 +28,9 @@
 </script>
 
 <Tool name="Yunicode">
-	<div style="display: inline-block; position: sticky; top: 0; background: white; max-width: 100%; box-sizing: border-box;">
+	<div
+		style="display: inline-block; position: sticky; top: 0; background: white; max-width: 100%; box-sizing: border-box;"
+	>
 		<Yunicode
 			bind:font={cAlphabet.font}
 			bind:variant={cAlphabet.variant}
@@ -37,7 +39,7 @@
 	</div>
 
 	<h2>Bibliothèque</h2>
-	<!-- <TextInput bind:value={search} placeholder="Recherchez ici..." /> -->
+	<TextInput bind:value={search} placeholder="Recherchez ici..." />
 
 	{@render dbView(
 		"Alphabets",
@@ -83,14 +85,16 @@
 	{#each keys(db) as id1}
 		<ul>
 			{#each keys(db[id1]) as id2}
-				<li>
-					<Button
-						variant="span"
-						onClick={() => {
-							onSelect(id1, id2);
-						}}>{showAs(id1, id2)}</Button
-					>
-				</li>
+				{#if id2.includes(search) || id1.includes(search) || search === ""}
+					<li>
+						<Button
+							variant="span"
+							onClick={() => {
+								onSelect(id1, id2);
+							}}>{showAs(id1, id2)}</Button
+						>
+					</li>
+				{/if}
 			{/each}
 		</ul>
 	{/each}
