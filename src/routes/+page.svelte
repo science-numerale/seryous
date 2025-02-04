@@ -20,5 +20,5 @@
 	le
 	<a href="https://github.com/science-numerale/seryous/blob/main/README.md"
 		>README</a
-	> sur GitHub
+	> sur GitHub.
 </p>
