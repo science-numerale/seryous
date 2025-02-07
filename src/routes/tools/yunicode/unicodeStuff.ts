@@ -1,5 +1,7 @@
 // DBs
 
+import { keys } from "$lib/utils";
+
 export const alphabetsDB = {
 	"normal": {
 		"normal": "ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz 0123456789 ?!',.",
@@ -45,6 +47,7 @@ export const alphabetsDB = {
 		"normal": "ⓐⓑⓒⓓⓔⓕⓖⓗⓘⓙⓚⓛⓜⓝⓞⓟⓠⓡⓢⓣⓤⓥⓦⓧⓨⓩ ⒶⒷⒸⒹⒺⒻⒼⒽⒾⒿⓀⓁⓂⓃⓄⓅⓆⓇⓈⓉⓊⓋⓌⓍⓎⓏ ⓪①②③④⑤⑥⑦⑧⑨",
 	},
 }
+let normal = alphabetsDB["normal"]["normal"]
 
 export let modifiersDB = {
 	"barré": {
@@ -63,10 +66,28 @@ export let modifiersDB = {
 }
 
 // Types
-
+//
 type KeysOfUnion<T> = T extends T ? keyof T : never;
+
 export type Font = keyof typeof alphabetsDB
-export type Variant<F extends Font> = KeysOfUnion<typeof alphabetsDB[F]>
+export type Variant<F extends Font = Font> = KeysOfUnion<typeof alphabetsDB[F]>
+export interface AlphabetPath<F extends Font = Font> {
+	font: F,
+	variant: Variant<F>,
+}
+
+export type ModifierFont = keyof typeof alphabetsDB
+export type ModifierVariant<F extends Font = Font> = KeysOfUnion<typeof alphabetsDB[F]>
+export interface ModifierPath {
+	font: Font,
+	variant: Variant<AlphabetPath["font"]>,
+}
+
+export interface WritingParams {
+	alphabet: AlphabetPath
+	modifiers: string[]
+	verlan: boolean
+}
 
 // Functions
 
@@ -79,18 +100,28 @@ function parseModifier(mod: string) {
 	return [...new Set(mod.match(/[\u0300-\u036F\u1AB0-\u1AFF\u1DC0-\u1DFF\u20D0-\u20FF\uFE20-\uFE2F]/g) || [])]
 }
 
-export default function getVariant<F extends Font>(text: string, font: F, variant: Variant<F>, modifiers: string[] = [], verlan: boolean = false) {
+export default function getVariant(text: string, params: WritingParams) {
+	console.log(JSON.stringify(params))
+	let font = params.alphabet.font
+	let variant = params.alphabet.variant
+	let modifiers = params.modifiers
+	let verlan = params.verlan
+
 	let list = text.split("")
 	let sufix = modifiers.map(e => parseModifier(e)).join("")
 	if (verlan) list = list.reverse()
+
+	let alphabet = Array.from(normal)
+
+	let variants = alphabetsDB[font]
+	if (keys(variants).includes(variant)) {
+		alphabet = Array.from(variants[variant as keyof typeof variants])
+	}
+
 	list = list.map((char) => {
-		let id = alphabetsDB.normal.normal.indexOf(char);
-		if (id !== -1) {
-			let variants = alphabetsDB[font] as Record<typeof variant, string>
-			let cr = Array.from(variants[variant])[id]
-			if (cr) return cr
-		}
-		return char
+		let id = normal.indexOf(char);
+		let cr = alphabet[id]
+		return cr || char
 	})
 
 
@@ -99,4 +130,20 @@ export default function getVariant<F extends Font>(text: string, font: F, varian
 	return list.join("")
 }
 
-let test = getVariant("test", "fraktur", "gras")
+export function getDefaultParams(font?: Font): WritingParams {
+	return font ? {
+		alphabet: {
+			font: font,
+			variant: "normal",
+		},
+		modifiers: [],
+		verlan: false,
+	} : {
+		alphabet: {
+			font: "normal",
+			variant: "normal",
+		},
+		modifiers: [],
+		verlan: false,
+	}
+}
