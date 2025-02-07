@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Button from "../../../components/basic/Button.svelte";
 	import Details from "../../../components/basic/Details.svelte";
 	import CopyButton from "../../../components/CopyButton.svelte";
 	import Tool from "../Tool.svelte";
@@ -8,13 +9,17 @@
 	import getVariant, { getDefaultParams } from "./unicodeStuff";
 	import WritingParamsSelector from "./WritingParamsSelector.svelte";
 
+	const def: {
+		text: string;
+		current: WritingParams;
+	} = {
+		text: "",
+		current: getDefaultParams(),
+	};
 	let storage: {
 		text: string;
 		current: WritingParams;
-	} = $state({
-		text: "",
-		current: getDefaultParams(),
-	});
+	} = $state(def);
 </script>
 
 <Tool bind:storage name="Yunicode">
@@ -38,10 +43,12 @@
 					replace={(s) => getVariant(s, storage.current)}
 					verlan={storage.current.verlan}
 				/>
-				<CopyButton
-					text={storage.text}
-					style="width: 100%; box-sizing: border-box;"
-				/>
+				{#key storage.text}
+					<CopyButton
+						text={storage.text}
+						style="width: 100%; box-sizing: border-box;"
+					/>
+				{/key}
 			</div>
 		</div>
 
@@ -49,6 +56,17 @@
 			<Details summary="Bibliothèque">
 				<Bibliotheque bind:writingParams={storage.current} />
 			</Details>
+		</div>
+
+		<div>
+			<!-- Hmm... A bit messy -->
+			<Button
+				disabled={JSON.stringify(storage) === JSON.stringify(def)}
+				label="Réinitialiser"
+				onClick={() => {
+					storage = def;
+				}}
+			/>
 		</div>
 	</div>
 </Tool>

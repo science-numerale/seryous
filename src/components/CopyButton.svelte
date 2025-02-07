@@ -7,7 +7,7 @@
 		...props
 	}: {
 		text: string;
-	} & Omit<ComponentProps<typeof Button>, "onClick" | "children"> = $props()
+	} & Omit<ComponentProps<typeof Button>, "onClick" | "children" | "label"> = $props()
 
 	let copied = $state(0);
 </script>

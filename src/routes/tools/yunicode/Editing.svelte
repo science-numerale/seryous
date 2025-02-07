@@ -6,7 +6,7 @@
 	}: {
 		value: string;
 		replace?: (e: string) => string;
-		verlan?: boolean
+		verlan?: boolean;
 	} = $props();
 
 	let area: HTMLTextAreaElement;
@@ -26,7 +26,7 @@
 </script>
 
 <textarea
-	style="resize: vertical; min-width: 25rem; width: 100%; height: 5rem;"
+	style="resize: vertical; min-width: 5rem; width: 100%; height: 5rem;"
 	bind:value
 	bind:this={area}
 	onbeforeinputcapture={pressed}

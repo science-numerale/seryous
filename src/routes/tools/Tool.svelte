@@ -15,11 +15,15 @@
 	storage = Object.assign(
 		{},
 		$state.snapshot(storage),
-		$state.snapshot(_storage[name]),
+		$state.snapshot(_storage[name] || {}),
 	);
-	_storage[name] = storage;
+	$effect(() => {
+		_storage[name] = storage;
+	});
 </script>
 
-<div style="border: solid 2px black; display: inline-block; padding: 0.5rem; width: 100%;">
+<div
+	style="border: solid 2px black; display: inline-block; padding: 0.5rem; width: 100%;"
+>
 	{@render children()}
 </div>

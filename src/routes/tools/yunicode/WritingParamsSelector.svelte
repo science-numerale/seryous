@@ -14,6 +14,16 @@
 	}: {
 		params: WritingParams;
 	} = $props();
+
+	let oldVariant: typeof params.alphabet.variant;
+	$effect(() => {
+		if (params.alphabet.variant === "srevnela" && oldVariant !== "srevnela") {
+			params.verlan = true;
+		} else if (params.alphabet.variant !== "srevnela" && oldVariant === "srevnela") {
+			params.verlan = false;
+		}
+		oldVariant = params.alphabet.variant;
+	});
 </script>
 
 <div>

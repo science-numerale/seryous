@@ -44,7 +44,7 @@ export const alphabetsDB = {
 		"normal": "𝔸𝔹ℂ𝔻𝔼𝔽𝔾ℍ𝕀𝕁𝕂𝕃𝕄ℕ𝕆ℙℚℝ𝕊𝕋𝕌𝕍𝕎𝕏𝕐ℤ 𝕒𝕓𝕔𝕕𝕖𝕗𝕘𝕙𝕚𝕛𝕜𝕝𝕞𝕟𝕠𝕡𝕢𝕣𝕤𝕥𝕦𝕧𝕨𝕩𝕪𝕫 𝟘𝟙𝟚𝟛𝟜𝟝𝟞𝟟𝟠𝟡 ❔❕',.",
 	},
 	"cercle": {
-		"normal": "ⓐⓑⓒⓓⓔⓕⓖⓗⓘⓙⓚⓛⓜⓝⓞⓟⓠⓡⓢⓣⓤⓥⓦⓧⓨⓩ ⒶⒷⒸⒹⒺⒻⒼⒽⒾⒿⓀⓁⓂⓃⓄⓅⓆⓇⓈⓉⓊⓋⓌⓍⓎⓏ ⓪①②③④⑤⑥⑦⑧⑨",
+		"normal": "ⒶⒷⒸⒹⒺⒻⒼⒽⒾⒿⓀⓁⓂⓃⓄⓅⓆⓇⓈⓉⓊⓋⓌⓍⓎⓏ ⓐⓑⓒⓓⓔⓕⓖⓗⓘⓙⓚⓛⓜⓝⓞⓟⓠⓡⓢⓣⓤⓥⓦⓧⓨⓩ ⓪①②③④⑤⑥⑦⑧⑨",
 	},
 }
 let normal = alphabetsDB["normal"]["normal"]
@@ -101,7 +101,6 @@ function parseModifier(mod: string) {
 }
 
 export default function getVariant(text: string, params: WritingParams) {
-	console.log(JSON.stringify(params))
 	let font = params.alphabet.font
 	let variant = params.alphabet.variant
 	let modifiers = params.modifiers

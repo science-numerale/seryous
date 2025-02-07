@@ -20,7 +20,7 @@
 			| { children?: undefined; label: string }
 		) = $props();
 
-	let doIt = $state(disabled ? () => {} : onClick);
+	let doIt = $derived(disabled ? () => {} : onClick);
 </script>
 
 {#if variant === "span"}
@@ -42,9 +42,7 @@
 {#snippet here()}
 	{#if children}
 		{@render children()}
-	{:else}
-		{label}
-	{/if}
+	{:else}{label}{/if}
 {/snippet}
 
 <style>

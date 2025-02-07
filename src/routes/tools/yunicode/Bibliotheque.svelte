@@ -20,7 +20,7 @@
 
 <TextInput bind:value={search} placeholder="Recherchez ici..." />
 
-<div style="display: flex; flex-wrap: wrap;">
+<div style="display: flex; flex-wrap: wrap; gap: 1rem;">
 	{@render dbView(
 		"Alphabets",
 		alphabetsDB,
@@ -40,7 +40,7 @@
 	)}
 
 	{@render dbView(
-		"Modificateurs",
+		"Modificateurs (cumulable)",
 		modifiersDB,
 		(modifier, variant) => {
 			writingParams.modifiers.push(
