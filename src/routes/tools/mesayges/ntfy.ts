@@ -29,8 +29,8 @@ export interface Message {
 }
 
 
-export function onMessage(url: string, callback: (m: Message) => void) {
-	const eventSource = new EventSource(url);
+export function onMessage(topic: string, callback: (m: Message) => void) {
+	const eventSource = new EventSource(`https://ntfy.sh/${topic}/sse`);
 
 	eventSource.onmessage = (e) => {
 		const data = JSON.parse(e.data) as Message
@@ -38,4 +38,12 @@ export function onMessage(url: string, callback: (m: Message) => void) {
 	};
 
 	return () => eventSource.close()
+}
+
+export async function getMessages(topic: string): Promise<Message[]> {
+	let raw = await fetch(`https://ntfy.sh/${topic}/json?poll=1`)
+	return (await raw.text())
+		.split("\n")
+		.map(e => { try { return JSON.parse(e) } catch { return null } })
+		.filter(e => e);
 }
