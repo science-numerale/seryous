@@ -1,5 +1,5 @@
 {
-  description = "Le flake Nix de Seryous";
+  description = "Le flake Nix de serYous";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";

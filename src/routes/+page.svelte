@@ -3,12 +3,12 @@
 </script>
 
 <svelte:head>
-	<title>Seryous</title>
-	<meta name="description" content="Accueil de Seryous" />
+	<title>serYous</title>
+	<meta name="description" content="Accueil de serYous" />
 </svelte:head>
 
 <h1>
-	Ceci est la page d'accueil de Seryous <small>(≠ <a
+	Ceci est la page d'accueil de serYous <small>(≠ <a
 		href="https://science-numerale.github.io/yuser/">Yuser</a
 	>)</small>, et elle n'est pas très intéressante pour l'instant
 </h1>

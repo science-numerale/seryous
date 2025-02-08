@@ -1,4 +1,4 @@
-# Seryous
+# serYous
 
 Besoin d'un site sérieux et utile ? Vous l'avez trouvé !
 

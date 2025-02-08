@@ -28,7 +28,7 @@
 	</main>
 
 	<footer>
-		Seryous est un projet sérieux qui offre des outils pratiques, à l'inverse de <a
+		serYous est un projet sérieux qui offre des outils pratiques, à l'inverse de <a
 			href="https://science-numerale.github.io/yuser/">Yuser</a
 		>
 	</footer>
