@@ -14,10 +14,6 @@ q {
 	/* Example for French-style quotes */
 }
 
-textarea, input {
-	border: solid 2px black;
-}
-
 button, select {
 	background: black;
 	&, * {
@@ -27,7 +23,7 @@ button, select {
 	border: none;
 }
 input, textarea, hr {
-	border: 2px black solid;
+	/*border: 2px black solid;*/
 }
 
 [disabled] {

@@ -9,6 +9,12 @@
 	import getVariant, { getDefaultParams } from "./unicodeStuff";
 	import WritingParamsSelector from "./WritingParamsSelector.svelte";
 
+	let {
+		text = $bindable(),
+	}: {
+		text?: string;
+	} = $props();
+
 	const def: {
 		text: string;
 		current: WritingParams;
@@ -20,6 +26,17 @@
 		text: string;
 		current: WritingParams;
 	} = $state(def);
+
+	let THEtext = $state("");
+
+	$effect(() => {
+		if (text) THEtext = text
+		else THEtext = storage.text;
+	});
+	$effect(()=>{
+		if (text) text = THEtext
+		else storage.text = THEtext
+	})
 </script>
 
 <Tool bind:storage name="Yunicode">
@@ -39,7 +56,7 @@
 					/>Verlan</label
 				>
 				<Editing
-					bind:value={storage.text}
+					bind:value={THEtext}
 					replace={(s) => getVariant(s, storage.current)}
 					verlan={storage.current.verlan}
 				/>

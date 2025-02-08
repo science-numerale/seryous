@@ -6,16 +6,22 @@
 		placeholder = "",
 		disabled = false,
 		variant = "input",
+		onValidate,
 	}: {
 		placeholder?: string;
 		variant?: "input" | "textarea";
+		onValidate?: () => void;
 	} & InputProps<string> = $props();
+
+	function keyDown(e: KeyboardEvent) {
+		if (e.key === "Enter") onValidate?.();
+	}
 </script>
 
 {#if variant === "input"}
-	<input bind:value {placeholder} {disabled} />
+	<input bind:value onkeydown={keyDown} {placeholder} {disabled} />
 {:else}
-	<textarea bind:value {placeholder} {disabled}></textarea>
+	<textarea bind:value onkeydown={keyDown} {placeholder} {disabled}></textarea>
 {/if}
 
 <style>
