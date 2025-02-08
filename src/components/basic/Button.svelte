@@ -34,9 +34,7 @@
 		{...props}>{@render here()}</span
 	>
 {:else}
-	<button {disabled} class={variant} onclick={doIt} {...props}
-		>{@render here()}</button
-	>
+	<button {disabled} onclick={doIt} {...props}>{@render here()}</button>
 {/if}
 
 {#snippet here()}
