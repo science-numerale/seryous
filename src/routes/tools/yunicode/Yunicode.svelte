@@ -30,13 +30,18 @@
 	let THEtext = $state("");
 
 	$effect(() => {
-		if (text) THEtext = text
+		if (text) THEtext = text;
 		else THEtext = storage.text;
 	});
-	$effect(()=>{
-		if (text) text = THEtext
-		else storage.text = THEtext
-	})
+	$effect(() => {
+		if (text) text = THEtext;
+		else storage.text = THEtext;
+	});
+
+	if (navigator.userAgent.includes("Android"))
+		alert(
+			"Yunicode n'est pas compatible avec tous les appareils Android. Essayez de visiter le site sur ordinateur si vous rencontrez des dysfontionnements.",
+		);
 </script>
 
 <Tool bind:storage name="Yunicode">
@@ -48,7 +53,7 @@
 			<div>
 				<WritingParamsSelector bind:params={storage.current} />
 			</div>
-			<div style="flex-grow: 1; flex-basis: min-content;">
+			<div style="flex-grow: 1; flex-basis: min-content;" class="box">
 				<label
 					><input
 						type="checkbox"
@@ -63,13 +68,13 @@
 				{#key storage.text}
 					<CopyButton
 						text={storage.text}
-						style="width: 100%; box-sizing: border-box;"
+						style="width: 100%;"
 					/>
 				{/key}
 			</div>
 		</div>
 
-		<div style="border: solid 2px black; padding: 0.5rem;">
+		<div class="box">
 			<Details summary="Bibliothèque">
 				<Bibliotheque bind:writingParams={storage.current} />
 			</Details>

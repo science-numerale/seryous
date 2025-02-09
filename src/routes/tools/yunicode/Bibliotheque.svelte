@@ -74,7 +74,7 @@
 		{#each keys(db) as id1}
 			<ul>
 				{#each keys(db[id1]) as id2}
-					{#if id2.includes(search) || id1.includes(search) || search === ""}
+					{#if id2.toLowerCase().includes(search.toLowerCase()) || id1.toLowerCase().includes(search.toLowerCase()) || search === ""}
 						<li>
 							<Button
 								variant="span"

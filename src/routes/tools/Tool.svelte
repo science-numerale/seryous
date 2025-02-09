@@ -23,7 +23,8 @@
 </script>
 
 <div
-	style="border: solid 2px black; display: inline-block; padding: 0.5rem; width: 100%;"
+	style="display: inline-block; width: 100%;"
+	class="box"
 >
 	{@render children()}
 </div>

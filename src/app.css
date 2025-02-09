@@ -30,3 +30,8 @@ input, textarea, hr {
 	opacity: 50%;
 	cursor: not-allowed;
 }
+
+.box {
+	border: solid black 2px;
+	padding: .5rem;
+}

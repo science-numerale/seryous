@@ -30,5 +30,6 @@
 	bind:value
 	bind:this={area}
 	onbeforeinputcapture={pressed}
+	autocapitalize="off"
 	placeholder={replace("Choisissez votre police, PUIS écrivez")}
 ></textarea>

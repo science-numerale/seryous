@@ -4,7 +4,7 @@
 	"version": "0.0.1",
 	"type": "module",
 	"scripts": {
-		"dev": "vite dev & storybook dev -p 6006",
+		"dev": "vite dev --host & storybook dev -p 6006",
 		"storybook": "storybook dev -p 6006",
 		"build": "vite build",
 		"build-storybook": "storybook build",

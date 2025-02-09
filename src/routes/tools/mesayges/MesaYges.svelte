@@ -42,20 +42,24 @@
 
 <Tool bind:storage name="mesaYges">
 	<small>
-		L'historique ne garde volontairement que les <strong>{maxMessages}</strong> dernier messages.
+		L'historique ne garde volontairement que les <strong>{maxMessages}</strong>
+		dernier messages.
 		<br />
 		Tous les messages postés ici sont <b>publiques</b> !!! Même ceux disparus.
 	</small>
 
-	<ul>
+	<ul style="display: flex; flex-direction: column; gap: .5rem;" class="box">
 		{#if messages.length === 0}
 			<li style="display: block;">Il n'y a aucun message.</li>
 		{/if}
 		{#each messages as message}
 			{@const date = new Date(message.time * 1000)}
-			<li style="display: block;">
-				{date.getHours()}:{date.getMinutes()}:{date.getSeconds()}s
-				<strong>{message.title}</strong> : <i>{message.message}</i>
+			<li style="display: flex; flex-direction: column;">
+				<span>
+					{date.getHours()}h {date.getMinutes()}m {date.getSeconds()}s
+					<strong>{message.title}</strong> :
+				</span>
+				<i style="padding-left: 1rem; display: inline-block;">{message.message}</i>
 			</li>
 		{/each}
 	</ul>
