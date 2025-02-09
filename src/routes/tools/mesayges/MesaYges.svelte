@@ -59,7 +59,11 @@
 					{date.getHours()}h {date.getMinutes()}m {date.getSeconds()}s
 					<strong>{message.title}</strong> :
 				</span>
-				<i style="padding-left: 1rem; display: inline-block;">{message.message}</i>
+				<i style="padding-left: 1rem; display: inline-block;">
+					{#each message.message.split("\n") as line}
+						<div>{line}</div>
+					{/each}
+				</i>
 			</li>
 		{/each}
 	</ul>
