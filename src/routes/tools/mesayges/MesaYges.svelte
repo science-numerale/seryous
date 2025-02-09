@@ -3,17 +3,36 @@
 	import TextInput from "../../../components/basic/inputs/TextInput.svelte";
 	import Tool from "../Tool.svelte";
 	import Button from "../../../components/basic/Button.svelte";
+	import { trusted } from "svelte/legacy";
+	import { untrack } from "svelte";
 
+	// Storage
 	let messages: Message[] = $state([]);
-	let topic = $state("seryous");
+	let storage = $state({
+		draft: {
+			username: `Utilisateur n${Math.random().toFixed(3).toString().slice(2)}`,
+			text: "",
+		},
+		notifications: false,
+	});
 
+	// Subscribe
+	let topic = $state("seryous");
 	$effect(() => {
 		getMessages(topic).then((e) => {
 			messages = e;
 		});
-		return onMessage(topic, (e) => messages.push(e));
+		return onMessage(topic, (e) => {
+			messages.push(e);
+			if (storage.notifications && e.title !== storage.draft.username) {
+				new Notification(e.title || "", {
+					body: e.message,
+				});
+			}
+		});
 	});
 
+	// Max messages
 	const maxMessages = 10;
 	$effect(() => {
 		messages;
@@ -21,13 +40,34 @@
 		if (messages.length > maxMessages) messages = messages.slice(-maxMessages);
 	});
 
-	let storage = $state({
-		draft: {
-			username: `Utilisateur n${Math.random().toFixed(3).toString().slice(2)}`,
-			text: "",
-		},
+	// Notifications
+	let notifPermission = $state(Notification.permission);
+	$effect(() => {
+		let id = setInterval(() => {
+			notifPermission = Notification.permission;
+		}, 500);
+		return () => clearInterval(id);
+	});
+	$effect(() => {
+		storage.notifications;
+		untrack(() => {
+			notifPermission = Notification.permission;
+			if (storage.notifications)
+				Notification.requestPermission().then((e) => {
+					notifPermission = e;
+				});
+		});
+	});
+	$effect(() => {
+		notifPermission;
+		untrack(() => {
+			if (notifPermission !== "granted") {
+				storage.notifications = false;
+			}
+		});
 	});
 
+	// Send messages
 	function send() {
 		fetch(`https://ntfy.sh/${topic}`, {
 			method: "POST",
@@ -69,6 +109,15 @@
 	</ul>
 
 	<div style="display: flex; flex-direction: column; gap: 1rem;">
+		<label>
+			<input
+				type="checkbox"
+				bind:checked={storage.notifications}
+				disabled={notifPermission === "denied"}
+			/>
+			Notifications {#if notifPermission !== "granted"}<small>(bloqués)</small
+				>{/if}
+		</label>
 		<label>
 			Nom d'utilisateur : <TextInput bind:value={storage.draft.username} />
 		</label>
