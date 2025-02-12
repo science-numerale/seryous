@@ -2,6 +2,7 @@
 	import Button from "../../../components/basic/Button.svelte";
 	import Details from "../../../components/basic/Details.svelte";
 	import CopyButton from "../../../components/CopyButton.svelte";
+	import EnvoYeurInline from "../envoyeur/EnvoYeurInline.svelte";
 	import Tool from "../Tool.svelte";
 	import Bibliotheque from "./Bibliotheque.svelte";
 	import Editing from "./Editing.svelte";
@@ -9,23 +10,23 @@
 	import getVariant, { getDefaultParams } from "./unicodeStuff";
 	import WritingParamsSelector from "./WritingParamsSelector.svelte";
 
+	interface Storage {
+		text: string;
+		current: WritingParams;
+	}
+
 	let {
 		text = $bindable(),
 	}: {
 		text?: string;
 	} = $props();
 
-	const def: {
-		text: string;
-		current: WritingParams;
-	} = {
+	const def: Storage = {
 		text: "",
 		current: getDefaultParams(),
 	};
-	let storage: {
-		text: string;
-		current: WritingParams;
-	} = $state(def);
+
+	let storage: Storage = $state(def);
 
 	let THEtext = $state("");
 
@@ -53,7 +54,7 @@
 			<div>
 				<WritingParamsSelector bind:params={storage.current} />
 			</div>
-			<div style="flex-grow: 1; flex-basis: min-content;" class="box">
+			<div style="flex-grow: 1; flex-basis: max(min-content, 15rem);" class="box">
 				<label
 					><input
 						type="checkbox"
@@ -66,10 +67,7 @@
 					verlan={storage.current.verlan}
 				/>
 				{#key storage.text}
-					<CopyButton
-						text={storage.text}
-						style="width: 100%;"
-					/>
+					<CopyButton text={storage.text} style="width: 100%;" />
 				{/key}
 			</div>
 		</div>
@@ -79,16 +77,21 @@
 				<Bibliotheque bind:writingParams={storage.current} />
 			</Details>
 		</div>
-
-		<div>
-			<!-- Hmm... A bit messy -->
-			<Button
-				disabled={JSON.stringify(storage) === JSON.stringify(def)}
-				label="Réinitialiser"
-				onClick={() => {
-					storage = def;
-				}}
-			/>
-		</div>
+		<!-- <div>
+			<Details summary="Partager">
+				<EnvoYeurInline message={JSON.stringify(storage)}>
+					<div>
+						<strong>{storage.text}</strong>
+						<br />
+						<small>
+							Police : {storage.current.alphabet.font} ({storage.current
+								.alphabet.variant})
+							<br />
+							Modificateur : {storage.current.modifiers.join(", ")}
+						</small>
+					</div>
+				</EnvoYeurInline>
+			</Details>
+		</div> -->
 	</div>
 </Tool>

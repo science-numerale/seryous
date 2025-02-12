@@ -19,7 +19,10 @@
 	$effect(() => {
 		if (params.alphabet.variant === "srevnela" && oldVariant !== "srevnela") {
 			params.verlan = true;
-		} else if (params.alphabet.variant !== "srevnela" && oldVariant === "srevnela") {
+		} else if (
+			params.alphabet.variant !== "srevnela" &&
+			oldVariant === "srevnela"
+		) {
 			params.verlan = false;
 		}
 		oldVariant = params.alphabet.variant;
@@ -53,7 +56,9 @@
 			<option value={key}
 				>{getVariant(
 					key,
-					assignDefault(getDefaultParams(), { alphabet: { font: params.alphabet.font, variant: key } }),
+					assignDefault(getDefaultParams(), {
+						alphabet: { font: params.alphabet.font, variant: key },
+					}),
 				)}</option
 			>
 		{/each}
@@ -86,6 +91,13 @@
 				params.modifiers.push("");
 			}}
 			label="Ajouter"
+		/>
+		<Button
+			disabled={params.modifiers.length === 0}
+			onClick={() => {
+				params.modifiers = [];
+			}}
+			label="Tout supprimer"
 		/>
 	</fieldset>
 </Details>

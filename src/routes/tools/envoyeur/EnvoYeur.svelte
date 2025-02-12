@@ -1,20 +1,20 @@
 <script lang="ts">
 	import { getMessages, onMessage, type Message } from "./ntfy";
 	import TextInput from "../../../components/basic/inputs/TextInput.svelte";
-	import Tool from "../Tool.svelte";
 	import Button from "../../../components/basic/Button.svelte";
-	import { trusted } from "svelte/legacy";
 	import { untrack } from "svelte";
+	import Tool from "../Tool.svelte";
 
 	// Storage
 	let messages: Message[] = $state([]);
-	let storage = $state({
+	let def = {
 		draft: {
 			username: `Utilisateur n${Math.random().toFixed(3).toString().slice(2)}`,
 			text: "",
 		},
 		notifications: false,
-	});
+	};
+	let storage = $state(def);
 
 	// Subscribe
 	let topic = $state("seryous");
@@ -80,10 +80,10 @@
 	}
 </script>
 
-<Tool bind:storage name="mesaYges">
+<Tool bind:storage name="envoYeur">
 	<small>
 		L'historique ne garde volontairement que les <strong>{maxMessages}</strong>
-		dernier messages.
+		derniers messages.
 		<br />
 		Tous les messages postés ici sont <b>publiques</b> !!! Même ceux disparus.
 	</small>

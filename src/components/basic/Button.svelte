@@ -44,7 +44,7 @@
 {/snippet}
 
 <style>
-	* {
+	:not([disabled]) {
 		cursor: pointer;
 	}
 </style>

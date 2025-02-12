@@ -10,14 +10,12 @@ $effect.root(() => {
 export type ToolStorage = Record<string, any>
 export { _storage }
 
-//export default function getEntry<T>(key: string, def: T) {
-//	let stated = $state(storage[key] || def)
+//export function getStorage<T>(name: string, def: T): T {
+//	_storage[name] = Object.assign(
+//		{},
+//		$state.snapshot(def),
+//		$state.snapshot(_storage[name] || {}),
+//	);
 //
-//	$effect.root(() => {
-//		$effect(() => {
-//			storage[key] = stated
-//		})
-//	})
-//
-//	return stated
+//	return _storage[name]
 //}

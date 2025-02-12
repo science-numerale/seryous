@@ -7,7 +7,6 @@
 	let chosis = $state(false);
 	let exiting = $state(false);
 	function choisir(choix: "red" | "blue") {
-		console.log(choix);
 		if (choix === "red") chosis = true;
 		else {
 			exiting = true;

@@ -22,8 +22,14 @@ button, select {
 
 	border: none;
 }
-input, textarea, hr {
+input, textarea {
 	/*border: 2px black solid;*/
+}
+
+hr {
+	margin: 1rem 0;
+	max-width: 5rem;
+	border: 2px black solid;
 }
 
 [disabled] {
