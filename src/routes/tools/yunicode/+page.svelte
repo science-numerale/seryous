@@ -2,6 +2,6 @@
 	import Yunicode from "./Yunicode.svelte";
 </script>
 
-<div style="width: 50rem; max-width: 100%;">
+<div style="overflow: hidden; resize: both; width: min(100%, 50rem);">
 	<Yunicode />
 </div>

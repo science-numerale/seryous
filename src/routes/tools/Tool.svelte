@@ -7,11 +7,13 @@
 		children,
 		storage = $bindable(),
 		name,
+		title,
 		small = false,
 	}: {
 		children: Snippet;
 		storage: T;
 		name: string;
+		title: string;
 		small?: boolean;
 	} = $props();
 
@@ -31,8 +33,12 @@
 	});
 </script>
 
-<div style="display: inline-block; width: 100%;">
-	<div class="box">
+<div
+	style="display: inline-flex; flex-direction: column; gap: 1rem; width: 100%; height: 100%;"
+>
+	<h1>{title}</h1>
+
+	<div class="box" style="flex-grow: 1; overflow: auto;">
 		{@render children()}
 	</div>
 

@@ -3,7 +3,6 @@
 	import Button from "../../../components/basic/Button.svelte";
 	import Tool from "../Tool.svelte";
 	import type { Snippet } from "svelte";
-	import type { Message } from "./ntfy";
 
 	let {
 		children,
@@ -37,7 +36,7 @@
 	}
 </script>
 
-<Tool bind:storage name="envoYeur" small={true}>
+<Tool bind:storage name="envoYeur" small={true} title="envoYeur">
 	<div>
 		{@render children?.()}
 	</div>

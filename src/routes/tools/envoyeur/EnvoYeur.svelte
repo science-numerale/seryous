@@ -80,7 +80,7 @@
 	}
 </script>
 
-<Tool bind:storage name="envoYeur">
+<Tool bind:storage name="envoYeur" title="envoYeur">
 	<small>
 		L'historique ne garde volontairement que les <strong>{maxMessages}</strong>
 		derniers messages.

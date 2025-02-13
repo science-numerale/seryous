@@ -6,6 +6,7 @@
 	import Tool from "../Tool.svelte";
 	import Bibliotheque from "./Bibliotheque.svelte";
 	import Editing from "./Editing.svelte";
+	import InstalleSignal from "./InstalleSignal.svelte";
 	import type { WritingParams } from "./unicodeStuff";
 	import getVariant, { getDefaultParams } from "./unicodeStuff";
 	import WritingParamsSelector from "./WritingParamsSelector.svelte";
@@ -45,16 +46,22 @@
 		);
 </script>
 
-<Tool bind:storage name="Yunicode">
-	<h1>{getVariant("Yunicode", storage.current)}</h1>
+<Tool
+	bind:storage
+	name="Yunicode"
+	title={getVariant("Yunicode", storage.current)}
+>
 	<div
-		style="display: inline-flex; flex-direction: column; gap: 1rem; width: 100%;"
+		style="display: inline-flex; flex-direction: column; gap: 1rem; height: 100%; width: 100%;"
 	>
-		<div style="display: inline-flex; flex-wrap: wrap; gap: 1rem; width: 100%;">
+		<div style="display: inline-flex; flex-wrap: wrap; gap: 1rem;">
 			<div>
 				<WritingParamsSelector bind:params={storage.current} />
 			</div>
-			<div style="flex-grow: 1; flex-basis: max(min-content, 15rem);" class="box">
+			<div
+				style="flex-grow: 1; flex-basis: max(min-content, 15rem);"
+				class="box"
+			>
 				<label
 					><input
 						type="checkbox"
@@ -93,5 +100,6 @@
 				</EnvoYeurInline>
 			</Details>
 		</div> -->
+		<InstalleSignal text={storage.text} />
 	</div>
 </Tool>

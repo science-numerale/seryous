@@ -41,3 +41,12 @@ hr {
 	border: solid black 2px;
 	padding: .5rem;
 }
+
+.flexible-div {
+	display: flex;
+	flex-direction: column;
+}
+.full-div {
+	height: 100%;
+	width: 100%;
+}
