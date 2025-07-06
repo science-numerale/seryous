@@ -1,3 +1,7 @@
-/.svelte-kit
-node_modules
-/build
+/node_modules/
+/.output/
+/.vinxi/
+/app.config.timestamp*
+/input/
+/generated/
+*.bundled_*.mjs

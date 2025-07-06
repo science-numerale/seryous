@@ -14,16 +14,21 @@ q {
 	/* Example for French-style quotes */
 }
 
-button, select {
+button, select, input {
 	background: black;
-	&, * {
-		color: white;
-	}
-
+	color: white;
 	border: none;
 }
 input, textarea {
 	/*border: 2px black solid;*/
+}
+
+button:not([disabled]), summary {
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
 }
 
 hr {

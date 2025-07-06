@@ -1,15 +1,9 @@
 body {
 	background: black;
-
-	&, * {
-		color: white;
-	}
+	color: white;
 }
 
 main {
 	background: white;
-
-	&, * {
-		color: black;
-	}
+	color: black;
 }

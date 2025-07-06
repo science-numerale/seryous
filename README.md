@@ -1,7 +1,32 @@
-# serYous
+# SolidStart
 
-Besoin d'un site sérieux et utile ? Vous l'avez trouvé !
+Everything you need to build a Solid project, powered by [`solid-start`](https://start.solidjs.com);
 
-Que vous le cherchiez ou non, ce site offre une miriade d'outils de tous niveaux d'utilité. Par exemple, saviez vous que vous pouviez mettre du texte ⓓⓐⓝⓢ ⓓⓔⓢ ⓒⓔⓡⓒⓛⓔⓢ ? ~~Il ne vous reste plus qu'à en trouver l'utilité, ce qui n'est pas chose facile~~ Ce genre d'outils utiles permettent d'améliorer la qualité de vie de chaque individu.
+## Creating a project
 
-De rien.
+```bash
+# create a new project in the current directory
+npm init solid@latest
+
+# create a new project in my-app
+npm init solid@latest my-app
+```
+
+## Developing
+
+Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+
+```bash
+npm run dev
+
+# or start the server and open the app in a new browser tab
+npm run dev -- --open
+```
+
+## Building
+
+Solid apps are built with _presets_, which optimise your project for deployment to different environments.
+
+By default, `npm run build` will generate a Node app that you can run with `npm start`. To use a different preset, add it to the `devDependencies` in `package.json` and specify in your `app.config.js`.
+
+## This project was created with the [Solid CLI](https://github.com/solidjs-community/solid-cli)

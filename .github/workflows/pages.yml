@@ -1,0 +1,49 @@
+name: GitHub Pages brrrrrrr
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  preparation:
+    name: Je prépare tout
+    runs-on: ubuntu-latest
+    steps:
+      - name: Je télécharge le code source
+        uses: actions/checkout@v3
+
+      - name: J'installe Deno
+        uses: denoland/setup-deno@v2
+        with:
+          version: v2.x
+
+      - name: L'enfert des dépendances
+        run: deno install --allow-scripts
+
+      - name: Je fabrique le code illisible
+        run: deno task build
+        env:
+          BASE_PATH: '/${{ github.event.repository.name }}'
+
+      - name: Je donne le code illisible
+        uses: actions/upload-pages-artifact@v3.0.1
+        with:
+          path: '.output/public'
+
+  publication_sur_l_internet:
+    name: Je publie le site sur l'Internet
+    needs: preparation
+    runs-on: ubuntu-latest
+
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Don final à GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4.0.5
