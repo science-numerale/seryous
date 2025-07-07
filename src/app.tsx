@@ -32,7 +32,6 @@ export default function App() {
           component: () => (
             <infos.component
               storage={getStorage(id)}
-              shared={getStorage("_shared")}
             />
           ),
         })) as RouteDefinition[]),

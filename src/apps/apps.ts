@@ -14,7 +14,6 @@ const apps = {
 
 export interface AppProps {
   storage: Store<object>;
-  shared: Store<object>;
 }
 
 export default apps;

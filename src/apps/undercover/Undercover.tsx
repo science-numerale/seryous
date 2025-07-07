@@ -14,12 +14,18 @@ import { createSignal } from "solid-js";
 import Details from "../../components/Details.tsx";
 import { For } from "solid-js";
 import frenchDb from "./db/french.json" with { type: "json" };
+import frenchTestDb from "./db/french-test.json" with { type: "json" };
 import { ParentProps } from "solid-js";
 import { untrack } from "solid-js";
 import { Title } from "@solidjs/meta";
+import Select from "../../components/Select.tsx";
+import { Accessor } from "solid-js";
+import { onCleanup } from "solid-js";
 
 const dictionaries = {
-  french: frenchDb.map((p) => p.map((s) => s.toLowerCase())),
+  french: (import.meta.env.DEV ? frenchTestDb : frenchDb).map((p) =>
+    p.map((s) => s.toLowerCase())
+  ),
 };
 
 function selectWords(usedWords: string[]) {
@@ -60,6 +66,10 @@ function PlayerDisplay(props: { player: string }) {
 
 function areValidSettings(settings: Settings) {
   const repartition = settings.roles;
+  const playerCount = Object.values(settings.roles).reduce(
+    (acc, val) => acc + val,
+    0,
+  );
   if (repartition.civilians < 1) {
     return "Il y a trop peu de civils";
   }
@@ -67,12 +77,12 @@ function areValidSettings(settings: Settings) {
     return "Il y a trop peu d'undercovers";
   }
   const thePlayers = [] as string[];
-  for (let i = 0; i < settings.players.length; i++) {
-    const player = settings.players[i];
-    if (player === "") {
+
+  for (let i = 0; i < playerCount; i++) {
+    const player = settings.players[i.toString() as unknown as number];
+    if ((player ?? "") === "") {
       return `Le joueur ${i + 1} n'a pas de nom (le pauvre)`;
-    }
-    if (thePlayers.includes(player)) {
+    } else if (thePlayers.includes(player)) {
       return `Le joueur ${
         i + 1
       } a copié le nom de quelqu'un (j'aurais pas aimé)`;
@@ -84,7 +94,13 @@ function areValidSettings(settings: Settings) {
 
 function start(settings: Settings, usedWords: string[]) {
   if (areValidSettings(settings) === true) {
-    const myPlayers = [...unwrap(settings).players];
+    const playerCount = Object.values(settings.roles).reduce(
+      (acc, val) => acc + val,
+      0,
+    );
+    const myPlayers = [...Array(playerCount)].map((_, i) =>
+      settings.players[i]
+    );
     const [game, setGame] = createStore<Game>({
       casting: Object.fromEntries(
         myPlayers.map((player) => [player, ""]),
@@ -93,7 +109,9 @@ function start(settings: Settings, usedWords: string[]) {
         Role
       >,
       words: selectWords(usedWords),
+      guesses: {},
       deads: [],
+      startingPlayer: "",
     });
     for (const role of keys(settings.roles)) {
       for (let i = 0; i < settings.roles[role]; i++) {
@@ -105,35 +123,25 @@ function start(settings: Settings, usedWords: string[]) {
         );
       }
     }
+
+    const allExceptWhiteman = keys(game.casting).filter((p) =>
+      game.casting[p] !== "whiteman"
+    );
+    setGame(
+      "startingPlayer",
+      allExceptWhiteman[Math.floor(Math.random() * allExceptWhiteman.length)],
+    );
+
     return game;
   }
 }
 
-function Init(props: { settings: Settings; setGame: () => void }) {
+function Init(props: { settings: Settings; start: () => void }) {
   const [settings, setSettings] = createStore(props.settings);
 
   const desiredPlayerCount = createMemo(() =>
     Object.values(settings.roles).reduce((acc, val) => acc + val, 0)
   );
-
-  createEffect(() => {
-    const desiredCount = desiredPlayerCount();
-    const actualCount = settings.players.length;
-    if (actualCount < desiredCount) {
-      const diff = desiredCount - actualCount;
-      setSettings(
-        "players",
-        produce((a) => a.push(...Array(diff).fill(""))),
-      );
-    } else if (actualCount > desiredCount) {
-      setSettings(
-        "players",
-        produce((p) => {
-          p.length = desiredCount;
-        }),
-      );
-    }
-  });
 
   const canPressNext = createMemo(() => areValidSettings(settings));
 
@@ -152,11 +160,12 @@ function Init(props: { settings: Settings; setGame: () => void }) {
       </>
     );
   }
+
   return (
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        props.setGame();
+        props.start();
       }}
     >
       <DistributionSelector role="civilians" label="Nombre de civils" />
@@ -175,11 +184,11 @@ function Init(props: { settings: Settings; setGame: () => void }) {
         <Match when={desiredPlayerCount() > 20}>(tu forces)</Match>
       </Switch>
       <ol>
-        <Index each={settings.players}>
-          {(player, i) => (
+        <Index each={new Array(desiredPlayerCount())}>
+          {(_, i) => (
             <li>
               <TextInput
-                value={player()}
+                value={settings.players[i] ?? ""}
                 setValue={(player) => setSettings("players", i, player)}
                 placeholder={`Nom du joueur ${i + 1}`}
               />
@@ -202,20 +211,26 @@ function Init(props: { settings: Settings; setGame: () => void }) {
 }
 
 function ConfidentialSpace(props: { game: Game }) {
-  const [selectedPlayer, setSelectedPlayer] = createSignal("");
-  const role = () => props.game.casting[selectedPlayer()];
+  const [selectedPlayer, setSelectedPlayer] = createSignal<string | undefined>(
+    undefined,
+  );
+  const role = () =>
+    selectedPlayer() === undefined
+      ? undefined
+      : props.game.casting[selectedPlayer()!];
   const [certified, setCertified] = createSignal(false);
   const players = createMemo(() => keys(props.game.casting));
   const [timer, setTimer] = createSignal(-1);
 
   // FIXME: Imperfect
-  setInterval(() => {
+  const intervalId = setInterval(() => {
     setTimer(timer() - 1);
     if (timer() === 0) reset();
   }, 1000);
+  onCleanup(() => clearInterval(intervalId));
 
   function reset() {
-    setSelectedPlayer("");
+    setSelectedPlayer(undefined);
     setCertified(false);
     setTimer(-1);
   }
@@ -230,17 +245,20 @@ function ConfidentialSpace(props: { game: Game }) {
       fallback={
         <>
           <form onSubmit={() => setCertified(true)}>
-            <TextInput
+            <Select
               value={selectedPlayer()}
-              setValue={setSelectedPlayer}
-              placeholder="Ton nom ici"
+              setValue={(v: string | undefined) => setSelectedPlayer(v)}
+              choices={players().reduce((acc, val) => {
+                acc[val] = val;
+                return acc;
+              }, {} as Record<string, string>)}
+              placeHolder="Choisis ton nom"
             />{" "}
             <Show
-              when={players().includes(selectedPlayer())}
-              fallback="Quel est ton joli nom ?"
+              when={players().includes(selectedPlayer() ?? "")}
             >
               <button type="submit">
-                Je certifie être <PlayerDisplay player={selectedPlayer()} />
+                Je certifie être <PlayerDisplay player={selectedPlayer()!} />
               </button>
             </Show>
           </form>
@@ -264,12 +282,12 @@ function ConfidentialSpace(props: { game: Game }) {
           <Match
             when={role() === "whiteman"}
           >
-            Tu est <strong>{displayRole(role())}</strong> (désolé ¯\_(ツ)_/¯)
+            Tu est <strong>{displayRole(role()!)}</strong> (désolé ¯\_(ツ)_/¯)
           </Match>
         </Switch>
         <br />
 
-        <Show when={props.game.deads.includes(selectedPlayer())}>
+        <Show when={props.game.deads.includes(selectedPlayer()!)}>
           PS : t'es <strong>MORT</strong>
           <br />
         </Show>
@@ -281,30 +299,135 @@ function ConfidentialSpace(props: { game: Game }) {
   );
 }
 
-function GameDashboard(props: { game: Game; end: () => void }) {
+function GameDashboard(props: { game: Game; forceQuit: () => void }) {
   const [game, setGame] = createStore(props.game);
+  const round = () => game.deads.length;
+  const roles = createMemo(() => (new Set(
+    Object.values(game.casting),
+  ) as unknown as Role[]));
+
   const players = createMemo(() => keys(game.casting));
-  const [quiting, setQuiting] = createSignal(0);
-  const [quitingId, setQuitingId] = createSignal<number | undefined>(undefined);
+  const alivePlayers = createMemo(() =>
+    players().filter((p) => !game.deads.includes(p))
+  );
+
+  const playersByRoles = {} as unknown as Record<Role, Accessor<string[]>>;
+  const alivePlayersByRoles = {} as unknown as Record<Role, Accessor<string[]>>;
+
+  for (
+    const role of roles()
+  ) {
+    playersByRoles[role] = createMemo(() =>
+      players().filter((p) => game.casting[p] === role)
+    );
+    alivePlayersByRoles[role] = createMemo(() =>
+      alivePlayers().filter((p) => game.casting[p] === role)
+    );
+  }
+
+  const [quitingStep, setQuitingStep] = createSignal(0);
+
+  // Timer setup
+  createEffect(() => {
+    quitingStep();
+    const id = setTimeout(() => setQuitingStep(0), 3000);
+    onCleanup(() => clearTimeout(id));
+  });
 
   createEffect(() => {
-    quiting();
-    untrack(() => {
-      clearTimeout(quitingId());
-      setQuitingId(setTimeout(() => setQuiting(0), 3000));
-    });
+    const c = { // Stands for "count"
+      total: alivePlayers().length,
+
+      c: alivePlayersByRoles.civilians().length,
+      u: alivePlayersByRoles.undercovers().length,
+      w: alivePlayersByRoles.whiteman().length,
+    };
+
+    if (c.total <= 1) {
+      setGame({
+        end: {
+          winners: alivePlayers(),
+          explanation: c.total === 0
+            ? "Il ne reste aucun joueur"
+            : "Il n'y a plus que 1 survivant",
+        },
+      });
+    } else if (c.total <= 2) {
+      if (c.w > 0) {
+        setGame({
+          end: {
+            winners: alivePlayersByRoles.whiteman(),
+            explanation: `Il reste ${
+              displayRoleCount(c.w, "whiteman")
+            } pour seulement ${displayRoleCount(c.c, "civilians")}`,
+          },
+        });
+      } else if (c.u > 0) {
+        setGame({
+          end: {
+            winners: alivePlayersByRoles.undercovers(),
+            explanation: `Il reste ${
+              displayRoleCount(c.u, "undercovers")
+            } pour seulement ${displayRoleCount(c.c, "civilians")}`,
+          },
+        });
+      } else {setGame({
+          end: {
+            winners: alivePlayersByRoles.civilians(),
+            explanation: "Il ne reste que des civils",
+          },
+        });}
+    }
   });
+
+  function killPlayer(player: string) {
+    if (game.casting[player] === "whiteman") {
+      const guess = prompt(
+        `${player}, tu es Mr. White, et tu as le droit d'essayer de deviner le mot des CIVILS pour gagner. Saisis le mot secret ici :`,
+      );
+      if (guess === null) {
+        alert("...");
+        setGame("deads", game.deads.length, player);
+      } else {
+        setGame("guesses", player, guess);
+        if (
+          guess.toLowerCase() === game.words.civilians
+        ) {
+          alert(
+            "Oui, bravo. C'était facile en même temps...",
+          );
+          setGame({
+            end: {
+              winners: [player],
+              explanation:
+                `${player} (Mr. White) est mort mais a trouvé le mot secret`,
+            },
+          });
+        } else {
+          alert("non.");
+          setGame("deads", game.deads.length, player);
+        }
+      }
+    } else {
+      setGame("deads", game.deads.length, player);
+    }
+
+    setGame(
+      "startingPlayer",
+      alivePlayers()[Math.floor(Math.random() * alivePlayers().length)],
+    );
+  }
 
   function QuitStep(
     thisProps: ParentProps<{ step: number; final?: boolean }>,
   ) {
     return (
-      <Match when={quiting() === thisProps.step}>
+      <Match when={quitingStep() === thisProps.step}>
         <button
           type="button"
           onClick={() => {
-            if (thisProps.final) props.end();
-            else setQuiting(thisProps.step + 1);
+            if (thisProps.final) props.forceQuit();
+            else setQuitingStep(thisProps.step + 1);
           }}
         >
           {thisProps.children}
@@ -315,6 +438,14 @@ function GameDashboard(props: { game: Game; end: () => void }) {
 
   return (
     <>
+      <strong>
+        Tour {round() + 1} : <PlayerDisplay player={game.startingPlayer} />{" "}
+        commence
+      </strong>
+      <br />
+      <small>Tuez quelqu'un pour passer au tour suivant</small>
+      <br />
+      <br />
       <div
         style={{
           display: "flex",
@@ -341,23 +472,7 @@ function GameDashboard(props: { game: Game; end: () => void }) {
                             if (
                               confirm(`Vous voulez vraiment tuer ${player} ?`)
                             ) {
-                              setGame("deads", game.deads.length, player);
-                              if (game.casting[player] === "whiteman") {
-                                const guess = prompt(
-                                  `${player}, tu es Mr. White, et tu as le droit d'essayer de deviner le mot des CIVILS pour gagner. Saisis le mot secret ici :`,
-                                );
-                                if (guess === null) {
-                                  alert("...");
-                                } else if (
-                                  guess.toLowerCase() === game.words.civilians
-                                ) {
-                                  alert(
-                                    "Oui, bravo. C'était facile en même temps...",
-                                  );
-                                } else {
-                                  alert("non.");
-                                }
-                              }
+                              killPlayer(player);
                             } else alert("Ok, ouf !");
                           }}
                         >
@@ -386,16 +501,13 @@ function GameDashboard(props: { game: Game; end: () => void }) {
               ]}
             >
               {(role) => {
-                const all =
-                  Object.values(game.casting).filter((v) => v === role)
-                    .length;
-                const alive =
-                  Object.entries(game.casting).filter(([k, v]) =>
-                    v === role && !game.deads.includes(k)
-                  ).length;
                 return (
                   <li>
-                    <strong>{alive}</strong>/{all} {displayRole(role, all > 1)}
+                    <strong>{alivePlayersByRoles[role]().length}
+                    </strong>/{displayRoleCount(
+                      playersByRoles[role]().length,
+                      role,
+                    )}
                   </li>
                 );
               }}
@@ -427,6 +539,96 @@ function GameDashboard(props: { game: Game; end: () => void }) {
   );
 }
 
+function GameOverview(props: { game: Game; quit: () => void }) {
+  const [game] = createStore(props.game);
+  const roleOrder: Record<Role, number> = {
+    civilians: 0,
+    undercovers: 1,
+    whiteman: 2,
+  };
+  const orderedPlayers = createMemo(() =>
+    keys(game.casting).sort((a, b) =>
+      roleOrder[game.casting[a]] - roleOrder[game.casting[b]]
+    )
+  );
+
+  return (
+    <>
+      <Show
+        when={game.end !== undefined}
+        fallback="La partie a été quittée en cours de route."
+      >
+        La partie est finie.
+        <br />
+        {/* FIXME: Well... no */}
+        Les{" "}
+        <strong>{displayRole(game.casting[game.end!.winners[0]], true)}</strong>
+        {" "}
+        ont gagné.
+      </Show>
+      <br />
+      <br />
+
+      Mot des civils : <strong>{game.words.civilians}</strong>
+      <br />
+      Mot des undercovers : <strong>{game.words.undercovers}</strong>
+      <br />
+      <br />
+
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Nom</th>
+            <th scope="col">Rôle</th>
+            <th scope="col">Mot</th>
+            <th scope="col">En vie</th>
+          </tr>
+        </thead>
+        <tbody>
+          <For each={orderedPlayers()}>
+            {(player) => {
+              const colors = ({ // [bg, fg]
+                civilians: ["lightblue", "black"],
+                undercovers: ["lightcoral", "black"],
+                whiteman: ["white", "black"],
+              } satisfies Record<Role, [string, string]>)[game.casting[player]];
+
+              return (
+                <tr style={{ background: colors[0], color: colors[1] }}>
+                  <th scope="row">
+                    <PlayerDisplay player={player} />
+                  </th>
+                  <td>{displayRole(game.casting[player])}</td>
+                  <td>
+                    {(game.words as Record<Role, string>)[
+                      game.casting[player]
+                    ] ??
+                      (game.guesses[player] === undefined
+                        ? "-"
+                        : `mot deviné : ${game.guesses[player]}`)}
+                  </td>
+                  <td
+                    style={{
+                      "text-align": "center",
+                      background: game.deads.includes(player)
+                        ? "grey"
+                        : "white",
+                    }}
+                  >
+                    {game.deads.includes(player) ? "non" : "oui"}
+                  </td>
+                </tr>
+              );
+            }}
+          </For>
+        </tbody>
+      </table>
+      <br />
+      <button type="button" onClick={props.quit}>Quitter</button>
+    </>
+  );
+}
+
 function displayRole(role: Role, plural: boolean = false) {
   if (plural) {
     return {
@@ -442,20 +644,9 @@ function displayRole(role: Role, plural: boolean = false) {
   }[role];
 }
 
-// const defaultGame = () => ({
-//   stage: "init",
-//   casting: {},
-//   words: {
-//     civilians: "",
-//     undercovers: "",
-//   },
-//   deads: [],
-// } as Game);
-
-// function resetGame(game: Game) {
-//   const [_, setGame] = createStore(game);
-//   setGame(defaultGame());
-// }
+function displayRoleCount(count: number, role: Role) {
+  return `${count} ${displayRole(role, count > 1)}`;
+}
 
 type Role = keyof Storage["settings"]["roles"];
 
@@ -465,8 +656,13 @@ interface Game {
     civilians: string;
     undercovers: string;
   };
+  guesses: Record<string, string>;
   deads: string[];
-  winner?: string;
+  startingPlayer: string;
+  end?: {
+    winners: string[];
+    explanation: string;
+  };
 }
 
 interface Settings {
@@ -475,13 +671,14 @@ interface Settings {
     undercovers: number;
     whiteman: number;
   };
-  players: string[];
+  players: Record<number, string>;
 }
 
 interface Storage {
   game?: Game;
   settings: Settings;
   usedWords: string[];
+  overview: boolean;
 }
 
 export default function Undercover(props: AppProps) {
@@ -492,9 +689,14 @@ export default function Undercover(props: AppProps) {
         undercovers: 2,
         whiteman: 1,
       },
-      players: Array(6).fill(""),
+      players: {},
     },
     usedWords: [],
+    overview: false,
+  });
+
+  createEffect(() => {
+    if (storage.game?.end !== undefined) setStorage("overview", true);
   });
 
   return (
@@ -508,8 +710,9 @@ export default function Undercover(props: AppProps) {
             <h2>Configuration de la partie</h2>
             <Init
               settings={storage.settings}
-              setGame={() => {
+              start={() => {
                 const game = start(storage.settings, storage.usedWords);
+                setStorage("overview", false);
                 if (game !== undefined) {
                   setStorage("game", game);
                 }
@@ -518,11 +721,27 @@ export default function Undercover(props: AppProps) {
           </>
         }
       >
-        <h2>Tableau de bord de la partie</h2>
-        <GameDashboard
-          game={storage.game!}
-          end={() => setStorage("game", undefined)}
-        />
+        <Show
+          when={storage.overview}
+          fallback={
+            <>
+              <h2>Tableau de bord de la partie</h2>
+              <GameDashboard
+                game={storage.game!}
+                forceQuit={() => setStorage("overview", true)}
+              />
+            </>
+          }
+        >
+          <h2>Résumé de la partie</h2>
+          <GameOverview
+            game={unwrap(storage.game!)}
+            quit={() => {
+              console.log("test");
+              setStorage("game", undefined);
+            }}
+          />
+        </Show>
       </Show>
     </>
   );

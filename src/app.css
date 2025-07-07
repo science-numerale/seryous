@@ -37,6 +37,19 @@ hr {
 	border: 2px black solid;
 }
 
+table {
+	border: 2px black solid;
+	border-collapse: collapse;
+}
+th, td {
+	border: 1px black solid;
+	padding: 0 5px;
+}
+thead {
+	background: black;
+	color: white;
+}
+
 [disabled] {
 	opacity: 50%;
 	cursor: not-allowed;

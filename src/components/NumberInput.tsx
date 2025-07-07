@@ -17,6 +17,8 @@ export default function NumberInput(
         onInput={(e) => props.setValue(+e.target.value)}
         min={props.min}
         max={props.max}
+        style={{ width: "4rem" }}
+        autocomplete="off"
       />{" "}
       {props.label}
     </label>
