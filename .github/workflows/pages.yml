@@ -7,7 +7,6 @@ on:
 jobs:
   github-pages:
     name: Je doit tout refaire pour GitHub Pages à cause du BASE_PATH
-    needs: fabrication
     runs-on: ubuntu-latest
 
     permissions:
@@ -25,7 +24,7 @@ jobs:
       - name: J'installe Deno
         uses: denoland/setup-deno@v2
         with:
-          version: v2.x
+          deno-version: v2.x
 
       - name: L'enfert des dépendances
         run: deno install --allow-scripts
@@ -55,7 +54,7 @@ jobs:
       - name: J'installe Deno
         uses: denoland/setup-deno@v2
         with:
-          version: v2.x
+          deno-version: v2.x
 
       - name: L'enfert des dépendances
         run: deno install --allow-scripts
@@ -90,3 +89,22 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: pages deploy . --project-name=${{ secrets.CLOUDFLARE_PROJECT }}
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+
+  surge-sh:
+    name: Je publie le site sur l'Internet (surge.sh)
+    needs: fabrication
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Je prends le code illisible
+        uses: actions/download-artifact@v4
+        with:
+          name: resultat-fabrication
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - run: npm install -g surge
+
+      - run: surge ./ ${{ secrets.SURGE_DOMAIN }} --token ${{ secrets.SURGE_TOKEN }}
