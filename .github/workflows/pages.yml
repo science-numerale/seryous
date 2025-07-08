@@ -73,10 +73,6 @@ jobs:
     needs: fabrication
     runs-on: ubuntu-latest
 
-    permissions:
-      pages: write
-      id-token: write
-
     steps:
       - name: Je prends le code illisible
         uses: actions/download-artifact@v4
@@ -106,5 +102,22 @@ jobs:
         with:
           node-version: 18
       - run: npm install -g surge
-
       - run: surge ./ ${{ secrets.SURGE_DOMAIN }} --token ${{ secrets.SURGE_TOKEN }}
+
+  neocities:
+    name: Je publie le site sur l'Internet (Neocities)
+    needs: fabrication
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Je prends le code illisible
+        uses: actions/download-artifact@v4
+        with:
+          name: resultat-fabrication
+
+      - name: Je l'envoie à Neocities
+        uses: bcomnes/deploy-to-neocities@v3 # Yep some random repos
+        with:
+          api_key: ${{ secrets.NEOCITIES_API_KEY }}
+          cleanup: true
+          dist_dir: ./
