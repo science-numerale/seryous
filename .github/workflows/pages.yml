@@ -5,9 +5,49 @@ on:
     branches: [ main ]
 
 jobs:
-  preparation:
+  github-pages:
+    name: Je doit tout refaire pour GitHub Pages à cause du BASE_PATH
+    needs: fabrication
+    runs-on: ubuntu-latest
+
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Je télécharge le code source
+        uses: actions/checkout@v3
+
+      - name: J'installe Deno
+        uses: denoland/setup-deno@v2
+        with:
+          version: v2.x
+
+      - name: L'enfert des dépendances
+        run: deno install --allow-scripts
+
+      - name: Je fabrique le code illisible sauce GitHub
+        run: deno task build
+        env:
+          BASE_PATH: '/${{ github.event.repository.name }}'
+
+      - name: Je donne le code illisible
+        uses: actions/upload-pages-artifact@v3.0.1
+        with:
+          path: .output/public
+
+      - name: Déploiement final à GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4.0.5
+
+  fabrication:
     name: Je prépare tout
     runs-on: ubuntu-latest
+
     steps:
       - name: Je télécharge le code source
         uses: actions/checkout@v3
@@ -22,28 +62,31 @@ jobs:
 
       - name: Je fabrique le code illisible
         run: deno task build
-        env:
-          BASE_PATH: '/${{ github.event.repository.name }}'
 
       - name: Je donne le code illisible
-        uses: actions/upload-pages-artifact@v3.0.1
+        uses: actions/upload-artifact@v4
         with:
-          path: '.output/public'
+          name: resultat-fabrication
+          path: .output/public
 
-  publication_sur_l_internet:
-    name: Je publie le site sur l'Internet
-    needs: preparation
+  cloudflare-pages:
+    name: Je publie le site sur l'Internet (Cloudflare Pages)
+    needs: fabrication
     runs-on: ubuntu-latest
 
     permissions:
       pages: write
       id-token: write
 
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
     steps:
-      - name: Don final à GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4.0.5
+      - name: Je prends le code illisible
+        uses: actions/download-artifact@v4
+        with:
+          name: resultat-fabrication
+
+      - name: Je le redonne à Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy . --project-name=${{ secrets.CLOUDFLARE_PROJECT }}
