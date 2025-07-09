@@ -6,9 +6,16 @@ export default defineConfig({
     baseURL: process.env.BASE_PATH,
     static: true,
     prerender: {
-      routes: ["/", "/app/yunicode", "/app/undercover"],
+      routes: [
+        "/",
+        "/404",
+        "/not_found",
+        "/app/yunicode",
+        "/app/undercover",
+      ],
       crawlLinks: true,
       failOnError: true,
+      autoSubfolderIndex: false,
     },
   },
 });

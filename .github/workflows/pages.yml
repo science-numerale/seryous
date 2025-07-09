@@ -121,3 +121,22 @@ jobs:
           api_key: ${{ secrets.NEOCITIES_API_KEY }}
           cleanup: true
           dist_dir: ./
+
+  nekoweb:
+    name: Je publie le site sur l'Internet (Nekoweb)
+    needs: fabrication
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Je prends le code illisible
+        uses: actions/download-artifact@v4
+        with:
+          name: resultat-fabrication
+          path: public
+
+      - name: Je l'envoie à Nekoweb
+        uses: indiefellas/deploy2nekoweb@v4
+        with:
+          nekoweb-api-key: ${{ secrets.NEKOWEB_API_KEY }}
+          nekoweb-folder: .
+          directory: public
