@@ -1,18 +1,26 @@
 import { createSignal } from "solid-js";
-import { useNavigate } from "@solidjs/router";
+import { Navigator, useNavigate } from "@solidjs/router";
 import { onCleanup } from "solid-js";
 import { createEffect } from "solid-js";
 import { Match, Switch } from "solid-js";
 
-export default function NotFound() {
+export default function Error(props: { code?: number; message?: string }) {
   const [choice, setChoice] = createSignal<undefined | "red" | "blue">(
     undefined,
   );
-  const navigate = useNavigate();
+  let navigate: Navigator | undefined = undefined;
+  try {
+    navigate = useNavigate();
+  } catch {
+    // empty
+  }
 
   createEffect(() => {
     if (choice() === "blue") {
-      const timeout = setTimeout(() => navigate(-1), 5000);
+      const timeout = setTimeout(() => {
+        if (navigate !== undefined) navigate(-1);
+        else globalThis.history.back();
+      }, 5000);
       onCleanup(() => clearTimeout(timeout));
     }
   });
@@ -81,11 +89,14 @@ export default function NotFound() {
         }
       >
         <Match when={choice() === "red"}>
-          <h1 style={{ margin: "auto" }}>404</h1>
+          <div style={{ margin: "auto", "align-items": "center" }}>
+            <h1>{props.code}</h1>
+            <h2>{props.message}</h2>
+          </div>
         </Match>
         <Match when={choice() === "blue"}>
           <h1>
-            {[...Array(404)].map((_, i) => (
+            {[...Array(props.code ?? 500)].map((_, i) => (
               <>
                 {`${i + 1}. L'erreur n'a jamais existé`}
                 <br />

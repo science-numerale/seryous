@@ -69,7 +69,7 @@ jobs:
           path: .output/public
 
   cloudflare-pages:
-    name: Je publie le site sur l'Internet (Cloudflare Pages)
+    name: Cloudflare Pages
     needs: fabrication
     runs-on: ubuntu-latest
 
@@ -87,8 +87,8 @@ jobs:
           command: pages deploy . --project-name=${{ secrets.CLOUDFLARE_PROJECT }}
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
 
-  surge-sh:
-    name: Je publie le site sur l'Internet (surge.sh)
+  surge:
+    name: Surge
     needs: fabrication
     runs-on: ubuntu-latest
 
@@ -98,14 +98,17 @@ jobs:
         with:
           name: resultat-fabrication
 
-      - uses: actions/setup-node@v3
+      - name: Installation de Node.js
+        uses: actions/setup-node@v3
         with:
           node-version: 18
-      - run: npm install -g surge
-      - run: surge ./ ${{ secrets.SURGE_DOMAIN }} --token ${{ secrets.SURGE_TOKEN }}
+      - name: Installation de Surge
+        run: npm install -g surge
+      - name: Déploiement sur Surge
+        run: surge ./ ${{ secrets.SURGE_DOMAIN }} --token ${{ secrets.SURGE_TOKEN }}
 
   neocities:
-    name: Je publie le site sur l'Internet (Neocities)
+    name: Neocities
     needs: fabrication
     runs-on: ubuntu-latest
 
@@ -123,7 +126,7 @@ jobs:
           dist_dir: ./
 
   nekoweb:
-    name: Je publie le site sur l'Internet (Nekoweb)
+    name: Nekoweb
     needs: fabrication
     runs-on: ubuntu-latest
 
@@ -140,3 +143,28 @@ jobs:
           nekoweb-api-key: ${{ secrets.NEKOWEB_API_KEY }}
           nekoweb-folder: .
           directory: public
+
+  vercel:
+    name: Vercel
+    needs: fabrication
+    runs-on: ubuntu-latest
+
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+    steps:
+      - name: Je prends le code illisible
+        uses: actions/download-artifact@v4
+        with:
+          name: resultat-fabrication
+          path: public
+
+      - name: Installation de Vercel CLI
+        run: npm install --global vercel@latest
+      - name: Tous les paramètres...
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Tout petit build
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }} # Cela ne fait quasiment rien
+      - name: Déploiement final !!!
+        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}

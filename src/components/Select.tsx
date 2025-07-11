@@ -1,4 +1,3 @@
-import { For } from "solid-js";
 import { Index } from "solid-js";
 import { JSX } from "solid-js";
 import { Show } from "solid-js/web";
@@ -11,7 +10,7 @@ export default function Select(
     } | {
       value?: string;
       setValue: (value?: string) => void;
-      placeHolder: JSX.Element;
+      placeholder: JSX.Element;
     })
     & {
       choices: Record<string, JSX.Element>;
@@ -27,8 +26,10 @@ export default function Select(
             : e.target.value.slice(1),
         )}
     >
-      <Show when={props.placeHolder !== undefined}>
-        <option value="">{props.placeHolder}</option>
+      <Show when={(props as { placeHolder: string }).placeHolder !== undefined}>
+        <option value="">
+          {(props as { placeHolder: string }).placeHolder}
+        </option>
       </Show>
       <Index each={Object.entries(props.choices)}>
         {(choice) => <option value={"v" + choice()[0]}>{choice()[1]}</option>}

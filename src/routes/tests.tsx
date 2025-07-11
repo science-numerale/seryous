@@ -1,5 +1,3 @@
-import { createStore } from "solid-js/store";
-import { For } from "solid-js";
 import Select from "../components/Select.tsx";
 import { createSignal } from "solid-js";
 
@@ -15,7 +13,7 @@ export default function App() {
         value={val()}
         setValue={setVal}
         choices={{ value: "coucou", display: "1" }}
-        placeHolder="place"
+        placeholder="place"
       />
     </div>
   );

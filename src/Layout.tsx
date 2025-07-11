@@ -2,6 +2,7 @@ import { ParentProps } from "solid-js";
 import { A } from "@solidjs/router";
 import { MetaProvider } from "@solidjs/meta";
 import apps from "./apps/apps.ts";
+import { ErrorBoundary } from "solid-js";
 
 export default function Layout(props: ParentProps) {
   const seriouslyThatsTheNameOfTheConst = { padding: "1rem" };
@@ -16,10 +17,24 @@ export default function Layout(props: ParentProps) {
       >
         <header style={seriouslyThatsTheNameOfTheConst}>
           <nav style={{ display: "flex", "flex-wrap": "wrap", gap: "1rem" }}>
-            <A href="/">À propos</A>
-            {Object.entries(apps).map(([id, infos]) => (
-              <A href={`/app/${id}`}>{infos.name}</A>
-            ))}
+            {/* We have to use an ErrorBoudary cause Layout can also be used outside Router */}
+            <ErrorBoundary
+              fallback={() => (
+                <>
+                  <a href={`${import.meta.env.SERVER_BASE_URL}/`}>À propos</a>
+                  {Object.entries(apps).map(([id, infos]) => (
+                    <a href={`${import.meta.env.SERVER_BASE_URL}/app/${id}`}>
+                      {infos.name}
+                    </a>
+                  ))}
+                </>
+              )}
+            >
+              <A href="/">À propos</A>
+              {Object.entries(apps).map(([id, infos]) => (
+                <A href={`/app/${id}`}>{infos.name}</A>
+              ))}
+            </ErrorBoundary>
           </nav>
         </header>
 

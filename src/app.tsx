@@ -7,8 +7,10 @@ import "./black-white.css";
 import "./app.css";
 import apps from "./apps/apps.ts";
 import { Suspense } from "solid-js";
+import { ErrorBoundary } from "solid-js";
+import Error from "./Error.tsx";
 
-export default function App() {
+export function App() {
   const [mainStorage, setMainStorage] = useMainStorage();
 
   function getStorage(name: string) {
@@ -30,12 +32,33 @@ export default function App() {
         ...(Object.entries(apps).map(([id, infos]) => ({
           path: `/app/${id}`,
           component: () => (
-            <infos.component
-              storage={getStorage(id)}
-            />
+            <ErrorBoundary
+              fallback={(err) => <Error
+                code={err.code}
+                message={err.message}
+              />}
+            >
+              <infos.component
+                storage={getStorage(id)}
+              />
+            </ErrorBoundary>
           ),
         })) as RouteDefinition[]),
       ]}
     </Router>
+  );
+}
+
+export default function AppWrapper() {
+  return (
+    <ErrorBoundary
+      fallback={(err) => (
+        <Layout>
+          <Error code={err.code} message={err.message} />
+        </Layout>
+      )}
+    >
+      <App />
+    </ErrorBoundary>
   );
 }

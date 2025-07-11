@@ -1,2 +1,2 @@
-import Error from "../404.tsx";
+import Error from "../Error.tsx";
 export default Error;

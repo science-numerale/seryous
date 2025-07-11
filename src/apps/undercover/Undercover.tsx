@@ -3,7 +3,7 @@ import { AppProps } from "../apps.ts";
 import { setDefaults } from "../utils.tsx";
 import { Match } from "solid-js";
 import NumberInput from "../../components/NumberInput.tsx";
-import { createStore, produce, unwrap } from "solid-js/store";
+import { createStore, unwrap } from "solid-js/store";
 import { createEffect } from "solid-js";
 import TextInput from "../../components/TextInput.tsx";
 import { Index } from "solid-js";
@@ -16,11 +16,11 @@ import { For } from "solid-js";
 import frenchDb from "./db/french.json" with { type: "json" };
 import frenchTestDb from "./db/french-test.json" with { type: "json" };
 import { ParentProps } from "solid-js";
-import { untrack } from "solid-js";
 import { Title } from "@solidjs/meta";
 import Select from "../../components/Select.tsx";
 import { Accessor } from "solid-js";
 import { onCleanup } from "solid-js";
+import { ErrorBoundary } from "solid-js";
 
 const dictionaries = {
   french: (import.meta.env.DEV ? frenchTestDb : frenchDb).map((p) =>
@@ -252,7 +252,7 @@ function ConfidentialSpace(props: { game: Game }) {
                 acc[val] = val;
                 return acc;
               }, {} as Record<string, string>)}
-              placeHolder="Choisis ton nom"
+              placeholder="Choisis ton nom"
             />{" "}
             <Show
               when={players().includes(selectedPlayer() ?? "")}
@@ -696,7 +696,8 @@ export default function Undercover(props: AppProps) {
   });
 
   createEffect(() => {
-    if (storage.game?.end !== undefined) setStorage("overview", true);
+    if (storage.game === undefined) setStorage("overview", false);
+    else if (storage.game?.end !== undefined) setStorage("overview", true);
   });
 
   return (
@@ -707,13 +708,13 @@ export default function Undercover(props: AppProps) {
         when={storage.game !== undefined}
         fallback={
           <>
-            <h2>Configuration de la partie</h2>
+            <h2>Configuration de la nouvelle partie</h2>
             <Init
               settings={storage.settings}
               start={() => {
                 const game = start(storage.settings, storage.usedWords);
-                setStorage("overview", false);
                 if (game !== undefined) {
+                  setStorage("overview", false);
                   setStorage("game", game);
                 }
               }}
@@ -721,27 +722,40 @@ export default function Undercover(props: AppProps) {
           </>
         }
       >
-        <Show
-          when={storage.overview}
-          fallback={
+        <ErrorBoundary
+          fallback={() => (
             <>
-              <h2>Tableau de bord de la partie</h2>
-              <GameDashboard
-                game={storage.game!}
-                forceQuit={() => setStorage("overview", true)}
-              />
+              <h2>Je crois qu'il y a une erreur avec la partie sauvegardée</h2>
+              <br />
+              Essaye de la{" "}
+              <button
+                type="button"
+                onClick={() => setStorage("game", undefined)}
+              >
+                réinitialiser
+              </button>
             </>
-          }
+          )}
         >
-          <h2>Résumé de la partie</h2>
-          <GameOverview
-            game={unwrap(storage.game!)}
-            quit={() => {
-              console.log("test");
-              setStorage("game", undefined);
-            }}
-          />
-        </Show>
+          <Show
+            when={storage.overview}
+            fallback={
+              <>
+                <h2>Tableau de bord de la partie</h2>
+                <GameDashboard
+                  game={storage.game!}
+                  forceQuit={() => setStorage("overview", true)}
+                />
+              </>
+            }
+          >
+            <h2>Résumé de la partie</h2>
+            <GameOverview
+              game={unwrap(storage.game!)}
+              quit={() => setStorage("game", undefined)}
+            />
+          </Show>
+        </ErrorBoundary>
       </Show>
     </>
   );

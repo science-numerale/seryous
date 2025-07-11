@@ -8,9 +8,10 @@ De rien.
 
 ## Le site le plus hébergé du monde
 
-En effet, serYous est déjà hébergé à 4 endroits différents :
+En effet, serYous est déjà hébergé à 6 endroits différents :
 - [GitHub Pages](https://science-numerale.github.io/seryous)
 - [Neocities](https://seryous.neocities.org/)
 - [Surge](https://seryous.surge.sh/)
 - [Cloudflare Pages](https://seryous.pages.dev/)
 - [Nekoweb](https://seryous.nekoweb.org/)
+- [Vercel](https://seryous.vercel.app/)

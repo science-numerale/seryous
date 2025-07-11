@@ -15,7 +15,7 @@ export default defineConfig({
       ],
       crawlLinks: true,
       failOnError: true,
-      autoSubfolderIndex: false,
+      // autoSubfolderIndex: false,
     },
   },
 });
