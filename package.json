@@ -3,7 +3,7 @@
   "type": "module",
   "scripts": {
     "dev": "vinxi dev",
-    "build": "vinxi build",
+    "build": "npx vinxi build && sh -c 'for d in 404 not_found; do cp .output/public/404/index.html .output/public/$d.html; done' && rm -r .output/public/404",
     "start": "vinxi start",
     "version": "vinxi version"
   },

@@ -1,2 +1,9 @@
 import Error from "../Error.tsx";
-export default Error;
+
+const Error404 = () => (
+  <>
+    <Error code={404} />
+  </>
+);
+
+export default Error404;

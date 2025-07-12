@@ -3,6 +3,8 @@ import { A } from "@solidjs/router";
 import { MetaProvider } from "@solidjs/meta";
 import apps from "./apps/apps.ts";
 import { ErrorBoundary } from "solid-js";
+import links from "./links.ts";
+import githubLogoWhite from "./assets/github-mark-white.svg";
 
 export default function Layout(props: ParentProps) {
   const seriouslyThatsTheNameOfTheConst = { padding: "1rem" };
@@ -16,7 +18,14 @@ export default function Layout(props: ParentProps) {
         }}
       >
         <header style={seriouslyThatsTheNameOfTheConst}>
-          <nav style={{ display: "flex", "flex-wrap": "wrap", gap: "1rem" }}>
+          <nav
+            style={{
+              display: "flex",
+              "flex-wrap": "wrap",
+              gap: "1rem",
+              "align-items": "center",
+            }}
+          >
             {/* We have to use an ErrorBoudary cause Layout can also be used outside Router */}
             <ErrorBoundary
               fallback={() => (
@@ -27,6 +36,13 @@ export default function Layout(props: ParentProps) {
                       {infos.name}
                     </a>
                   ))}
+                  <div style={{ flex: 1 }}></div>
+                  <a href={links.github.main}>
+                    <img
+                      src={githubLogoWhite}
+                      style={{ "max-height": "2rem" }}
+                    />
+                  </a>
                 </>
               )}
             >
@@ -34,6 +50,11 @@ export default function Layout(props: ParentProps) {
               {Object.entries(apps).map(([id, infos]) => (
                 <A href={`/app/${id}`}>{infos.name}</A>
               ))}
+
+              <div style={{ flex: 1 }}></div>
+              <A href={links.github.main}>
+                <img src={githubLogoWhite} style={{ "max-height": "2rem" }} />
+              </A>
             </ErrorBoundary>
           </nav>
         </header>

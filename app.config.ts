@@ -9,7 +9,6 @@ export default defineConfig({
       routes: [
         "/",
         "/404",
-        "/not_found",
         "/app/yunicode",
         "/app/undercover",
       ],

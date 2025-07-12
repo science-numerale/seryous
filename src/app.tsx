@@ -33,10 +33,12 @@ export function App() {
           path: `/app/${id}`,
           component: () => (
             <ErrorBoundary
-              fallback={(err) => <Error
-                code={err.code}
-                message={err.message}
-              />}
+              fallback={(err) => (
+                <Error
+                  code={err.code}
+                  message={err.message}
+                />
+              )}
             >
               <infos.component
                 storage={getStorage(id)}
